@@ -1,20 +1,35 @@
-import React from 'react'
-import MainBanner from '../components/MainBanner.jsx'
-import Categories from '../components/Categories.jsx'
-import BestSeller from '../components/BestSeller.jsx'
-import BottomBanner from '../components/BottomBanner.jsx'
-import NewsLetter from '../components/NewsLetter.jsx'
+import React from "react";
+import PageWrapper from "../components/PageWrapper";
+
+import MainBanner from "../components/MainBanner";
+import Categories from "../components/Categories";
+import BestSeller from "../components/BestSeller";
+import BottomBanner from "../components/BottomBanner";
+import NewsLetter from "../components/NewsLetter";
+
 
 const Home = () => {
   return (
-    <div>
-        <MainBanner />
-        <Categories />
-        <BestSeller />
-        <BottomBanner />
-        <NewsLetter />
-    </div>
-  )
-}
+    <PageWrapper>
+      <div className="space-y-20">
+        <div className="slide-in-left">
+          <MainBanner />
+        </div>
+        <div className="slide-in-right">
+          <Categories />
+        </div>
+        <div className="bounce-in">
+          <BestSeller />
+        </div>
+        <div className="fade-in">
+          <BottomBanner />
+        </div>
+        <div className="slide-in-left">
+          <NewsLetter />
+        </div>
+      </div>
+    </PageWrapper>
+  );
+};
 
-export default Home
+export default Home;

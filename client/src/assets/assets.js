@@ -69,6 +69,10 @@ import vanilla_muffins_image from "./vanilla_muffins_image.png";
 import quinoa_image from "./quinoa_image.png";
 import brown_rice_image from "./brown_rice_image.png";
 import barley_image from "./barley_image.png";
+import hero1 from "./hero1.jpg";
+import hero2 from "./hero2.jpg";
+import hero3 from "./hero3.jpg";
+
 
 export const assets = {
   logo,
@@ -94,6 +98,9 @@ export const assets = {
   white_arrow_icon,
   main_banner_bg,
   main_banner_bg_sm,
+  hero1,
+  hero2,
+  hero3,
   bottom_banner_image,
   bottom_banner_image_sm,
   add_address_iamge,
@@ -166,15 +173,7 @@ export const footerLinks = [
       { text: "Contact Us", url: "#" },
     ],
   },
-  {
-    title: "Follow Us",
-    links: [
-      { text: "Instagram", url: "#" },
-      { text: "Twitter", url: "#" },
-      { text: "Facebook", url: "#" },
-      { text: "YouTube", url: "#" },
-    ],
-  },
+ 
 ];
 
 export const features = [

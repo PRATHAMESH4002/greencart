@@ -19,35 +19,39 @@ const SellerLogin = () => {
                 setIsSeller(false) ;
                 toast.error(data.message) ;
             }
-        }catch(err){    
+        }catch(err){
             toast.error(err.message) ;
             setIsSeller(false) ;
         }
-        
+
     }
 
   return !isSeller && (
-    <form onSubmit={onSubmitHandler} className='min-h-screen flex items-center text-sm text-gray-600'>
-        <div className='flex flex-col gap-5 m-auto items-start p-8 py-12 min-w-80 sm:min-w-88 rounded-lg shadow-xl border border-gray-200 '>
-            <p className='text-2xl font-medium m-auto'>
-                <span className='text-primary'>Seller</span> Login
-            </p>
+    <div className='min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100 flex items-center justify-center p-4'>
+      <form onSubmit={onSubmitHandler} className='fade-in flex flex-col gap-6 m-auto items-start p-8 py-12 min-w-80 sm:min-w-96 rounded-2xl glass-effect shadow-2xl border border-white/20 backdrop-blur-lg'>
+          <p className='text-3xl font-bold m-auto gradient-text animate-pulse'>
+              <span className='text-primary'>Seller</span> Login
+          </p>
 
-            <div className='w-full'>
-                <p>Email</p>
-                <input onChange={(e) => setEmail(e.target.value)} value={email} name="email" type="email" placeholder='Enter your email'
-                className='border border-gray-200 rounded w-full p-2 mt-1 outline-primary'required/>
-            </div>
+          <div className='w-full'>
+              <p className='text-gray-700 font-medium mb-2'>Email</p>
+              <input onChange={(e) => setEmail(e.target.value)} value={email} name="email" type="email" placeholder='Enter your email'
+              className='border border-gray-300/50 rounded-xl w-full p-3 mt-1 outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white/70 backdrop-blur-sm transition-all duration-300' required/>
+          </div>
 
-            <div className='w-full'>
-                <p>Password</p>
-                <input onChange={(e) => setPassword(e.target.value)} value={password} name="password" type="password" placeholder='Enter your password'
-                className='border border-gray-200 rounded w-full p-2 mt-1 outline-primary' required/>
-            </div>
+          <div className='w-full'>
+              <p className='text-gray-700 font-medium mb-2'>Password</p>
+              <input onChange={(e) => setPassword(e.target.value)} value={password} name="password" type="password" placeholder='Enter your password'
+              className='border border-gray-300/50 rounded-xl w-full p-3 mt-1 outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white/70 backdrop-blur-sm transition-all duration-300' required/>
+          </div>
 
-            <button className='bg-primary text-white w-full py-2 rounded-md cursor-pointer'>Login</button>
-        </div>
-    </form> 
+          <button className='bg-gradient-to-r from-primary to-secondary hover:from-secondary hover:to-primary text-white w-full py-3 rounded-xl cursor-pointer font-semibold shadow-lg hover:shadow-xl transition-all duration-300 bounce-in'>Login</button>
+
+          {/* Floating elements for visual interest */}
+          <div className="absolute top-20 left-20 w-3 h-3 bg-primary/30 rounded-full animate-bounce"></div>
+          <div className="absolute bottom-20 right-20 w-4 h-4 bg-secondary/30 rounded-full animate-pulse"></div>
+      </form>
+    </div>
   )
 }
 

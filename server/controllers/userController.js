@@ -1,6 +1,18 @@
-import User from '../models/User.js';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import User from "../models/User.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import nodemailer from "nodemailer";
+
+/* --------------------------------------------------
+   EMAIL TRANSPORTER (OTP)
+-------------------------------------------------- */
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
 /* --------------------------------------------------
    REGISTER USER  →  POST /api/user/register
@@ -28,38 +40,19 @@ export const register = async (req, res) => {
 
     await user.save();
 
-    const token = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
-
-    // ✅ CORRECT COOKIE CONFIG (LOCALHOST SAFE)
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: false,        // ❗ MUST be false for localhost
-      sameSite: "lax",      // ❗ REQUIRED for cross-origin localhost
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-
     return res.json({
       success: true,
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-      },
+      message: "Registration successful. Please login.",
     });
 
   } catch (error) {
-    console.log(error.message);
     return res.json({ success: false, message: error.message });
   }
 };
 
-
 /* --------------------------------------------------
-   LOGIN USER  →  POST /api/user/login
+   LOGIN STEP 1 → PASSWORD CHECK + SEND OTP
+   POST /api/user/login
 -------------------------------------------------- */
 export const login = async (req, res) => {
   const { email, password } = req.body;
@@ -79,17 +72,65 @@ export const login = async (req, res) => {
       return res.json({ success: false, message: "Incorrect password." });
     }
 
+    // 🔐 Generate OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    user.otp = otp;
+    user.otpExpiry = Date.now() + 5 * 60 * 1000; // 5 minutes
+    await user.save();
+
+    // 📧 Send OTP email
+    await transporter.sendMail({
+      from: "GreenCart <no-reply@greencart.com>",
+      to: user.email,
+      subject: "GreenCart Login OTP",
+      text: `Your OTP is ${otp}. It is valid for 5 minutes.`,
+    });
+
+    return res.json({
+      success: true,
+      message: "OTP sent to your email",
+    });
+
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+};
+
+/* --------------------------------------------------
+   LOGIN STEP 2 → VERIFY OTP + ISSUE JWT
+   POST /api/user/verify-otp
+-------------------------------------------------- */
+export const verifyOtp = async (req, res) => {
+  const { email, otp } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (
+      !user ||
+      user.otp !== otp ||
+      user.otpExpiry < Date.now()
+    ) {
+      return res.json({ success: false, message: "Invalid or expired OTP" });
+    }
+
+    // Clear OTP
+    user.otp = null;
+    user.otpExpiry = null;
+    await user.save();
+
+    // 🔑 Generate JWT
     const token = jwt.sign(
       { id: user._id },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
 
-    // ✅ CORRECT COOKIE CONFIG
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,     // ❗ localhost
-      sameSite: "lax",   // ❗ cross-origin fix
+      secure: false,      // localhost
+      sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -103,11 +144,9 @@ export const login = async (req, res) => {
     });
 
   } catch (error) {
-    console.log(error.message);
     return res.json({ success: false, message: error.message });
   }
 };
-
 
 /* --------------------------------------------------
    CHECK AUTH  →  POST /api/user/is-auth
@@ -128,11 +167,9 @@ export const isAuth = async (req, res) => {
     return res.json({ success: true, user });
 
   } catch (error) {
-    console.log(error.message);
     return res.json({ success: false, message: error.message });
   }
 };
-
 
 /* --------------------------------------------------
    LOGOUT USER  →  POST /api/user/logout
@@ -141,7 +178,7 @@ export const logout = async (req, res) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
-      secure: false,   // ❗ localhost
+      secure: false,
       sameSite: "lax",
     });
 
