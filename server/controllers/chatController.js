@@ -1,4 +1,4 @@
-import Product from "../models/Product.js";
+import product from "../models/product.js";
 import User from "../models/User.js";
 
 export const chatBotReply = async (req, res) => {
